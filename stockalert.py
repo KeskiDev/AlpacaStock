@@ -2,9 +2,10 @@ import alpaca_trade_api as tradeapi
 import datetime
 import time
 import json
-from discord_webhook import DiscordWebhook
+import requests
 
 api = tradeapi.REST('api key','secret key', base_url='https://api.alpaca.markets')
+discord_webhook_url = "discord url here"
 
 companiesLastQuote = {}
 
@@ -35,15 +36,27 @@ def stockChecker():
                 difference = previousQuote - currentBid
 
                 results.append(msg.format(companySymbol, currentBid, difference))
-                print(msg.format(companySymbol, currentBid, difference))
-
+                #print(msg.format(companySymbol, currentBid, difference))
+                
+                Message = {
+                    "contend": msg.format(companySymbol, currentBid, difference)
+                }
+                requests.post(discord_webhook_url, data=Message)
+                
                 companiesLastQuote[companySymbol] = currentBid
             elif(currentBid < previousQuote):
                 msg = "BUY? - {} {} {}"
                 difference = previousQuote - currentBid
 
                 results.append(msg.format(companySymbol, currentBid, difference))
-                print(msg.format(companySymbol, currentBid,difference))
+
+                #print(msg.format(companySymbol, currentBid,difference))
+                
+                Message = {
+                    "contend": msg.format(companySymbol, currentBid, difference)
+                }
+                requests.post(discord_webhook_url, data=Message)
+
                 companiesLastQuote[companySymbol] = currentBid
             else:
                 companiesLastQuote[companySymbol] = currentBid
