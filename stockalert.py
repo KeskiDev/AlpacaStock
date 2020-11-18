@@ -15,7 +15,7 @@ def stockChecker():
     results = []
     #get all my watchlists
     watchLists = api.get_watchlists()
-    print(watchLists)
+    #print(watchLists)
     #only have one so use that one
     watchListId = watchLists[0].id
 
@@ -31,29 +31,30 @@ def stockChecker():
         
         if companyInList:
             previousQuote = companiesLastQuote[companySymbol]
-            if(currentBid > previousQuote):
-                msg = "SELL? - {} {} {}"
-                difference = previousQuote - currentBid
 
-                results.append(msg.format(companySymbol, currentBid, difference))
+            if(currentBid > previousQuote):
+
+                msg = "SELL? - {} {} +{}"
+                difference = currentBid - previousQuote
+                theDifference = format(difference, '.2f')
+
+                results.append(msg.format(companySymbol, currentBid, theDifference))
                 #print(msg.format(companySymbol, currentBid, difference))
                 
                 Message = {
-                    "contend": msg.format(companySymbol, currentBid, difference)
+                    "content": msg.format(companySymbol, currentBid, theDifference)
                 }
                 requests.post(discord_webhook_url, data=Message)
-                
                 companiesLastQuote[companySymbol] = currentBid
             elif(currentBid < previousQuote):
-                msg = "BUY? - {} {} {}"
+                msg = "BUY? - {} {} -{}"
                 difference = previousQuote - currentBid
-
-                results.append(msg.format(companySymbol, currentBid, difference))
-
-                #print(msg.format(companySymbol, currentBid,difference))
+                theDifference = format(difference, '.2f')
                 
+                results.append(msg.format(companySymbol, currentBid, theDifference))
+
                 Message = {
-                    "contend": msg.format(companySymbol, currentBid, difference)
+                    "content": msg.format(companySymbol, currentBid, theDifference)
                 }
                 requests.post(discord_webhook_url, data=Message)
 
@@ -62,11 +63,21 @@ def stockChecker():
                 companiesLastQuote[companySymbol] = currentBid
         else:
             companiesLastQuote[companySymbol] = currentBid
+    
+    
+
+#def saveToFile(data):
+    #save the result list to a file
+
+
+
 
 def runAnalysis():
+    count = 0
     while True:
         market = api.get_clock()
-
+        print(count)
+        count += 1
         if market.is_open:
             stockChecker()
             time.sleep(900)
