@@ -34,7 +34,7 @@ def stockChecker():
 
             if(currentBid > previousQuote):
 
-                msg = "SELL? - {} {} +{}"
+                msg = "SELL? - {} - ${} - up (+{})"
                 difference = currentBid - previousQuote
                 theDifference = format(difference, '.2f')
 
@@ -47,7 +47,7 @@ def stockChecker():
                 requests.post(discord_webhook_url, data=Message)
                 companiesLastQuote[companySymbol] = currentBid
             elif(currentBid < previousQuote):
-                msg = "BUY? - {} {} -{}"
+                msg = "BUY? - {} - ${} - down (-{})"
                 difference = previousQuote - currentBid
                 theDifference = format(difference, '.2f')
                 
@@ -69,9 +69,6 @@ def stockChecker():
 #def saveToFile(data):
     #save the result list to a file
 
-
-
-
 def runAnalysis():
     count = 0
     while True:
@@ -80,8 +77,10 @@ def runAnalysis():
         count += 1
         if market.is_open:
             stockChecker()
-            time.sleep(900)
+            time.sleep(1800)
             #900 seconds = 15 minutes
+            #1800 seconds = 30 minutes
+            #3600 seconds = 1 hour
         else:
             #wait an hour before checking again
             #figure out what api is using for time and then just make next check when the market opens
