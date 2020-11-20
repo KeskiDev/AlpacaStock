@@ -1,8 +1,10 @@
 import alpaca_trade_api as tradeapi
-import datetime
 import time
 import json
 import requests
+import datetime
+from datetime import timedelta
+from pytz import timezone
 
 api = tradeapi.REST('api key','secret key', base_url='https://api.alpaca.markets')
 discord_webhook_url = "discord url here"
@@ -25,6 +27,8 @@ def stockChecker():
     for company in watchListCompanies.assets:
         companySymbol = company['symbol']
         lastQuote = api.get_last_quote(companySymbol)
+        #todo get the barset
+        #get_barset(symbol) should give the opening price, top price, close price etc
         currentBid = lastQuote.bidprice
         
         companyInList = companiesLastQuote.get(companySymbol)
@@ -71,20 +75,29 @@ def stockChecker():
 
 def runAnalysis():
     count = 0
-    while True:
-        market = api.get_clock()
-        print(count)
-        count += 1
-        if market.is_open:
-            stockChecker()
-            time.sleep(1800)
-            #900 seconds = 15 minutes
-            #1800 seconds = 30 minutes
-            #3600 seconds = 1 hour
-        else:
-            #wait an hour before checking again
-            #figure out what api is using for time and then just make next check when the market opens
-            time.sleep(1800)
+
+
+    apple = api.get_last_quote('AAPL')
+    print(apple)
+    # while True:
+    #     market = api.get_clock()
+    #     print(count)
+    #     count += 1
+    #     if market.is_open:
+    #         stockChecker()
+    #         time.sleep(300)
+    #         #900 seconds = 15 minutes
+    #         #1800 seconds = 30 minutes
+    #         #3600 seconds = 1 hour
+    #     else:
+    #         #wait an hour before checking again
+    #         #check when the market opens
+    #         secondsToNextOpen = market.next_open - market.timestamp
+    #         print(f"{market.next_open} - in {secondsToNextOpen} seconds")
+
+
+    #         time.sleep(secondsToNextOpen.total_seconds())
+
 
     #get the aggs for a company for a specified time frame --
     #don't know what I'll use this for quite yet
