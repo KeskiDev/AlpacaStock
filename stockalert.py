@@ -76,27 +76,24 @@ def stockChecker():
 def runAnalysis():
     count = 0
 
-
-    apple = api.get_last_quote('AAPL')
-    print(apple)
-    # while True:
-    #     market = api.get_clock()
-    #     print(count)
-    #     count += 1
-    #     if market.is_open:
-    #         stockChecker()
-    #         time.sleep(300)
-    #         #900 seconds = 15 minutes
-    #         #1800 seconds = 30 minutes
-    #         #3600 seconds = 1 hour
-    #     else:
-    #         #wait an hour before checking again
-    #         #check when the market opens
-    #         secondsToNextOpen = market.next_open - market.timestamp
-    #         print(f"{market.next_open} - in {secondsToNextOpen} seconds")
+    while True:
+        market = api.get_clock()
+        print(count)
+        count += 1
+        if market.is_open:
+            stockChecker()
+            time.sleep(300)
+            #900 seconds = 15 minutes
+            #1800 seconds = 30 minutes
+            #3600 seconds = 1 hour
+        else:
+            #wait an hour before checking again
+            #check when the market opens
+            secondsToNextOpen = market.next_open - market.timestamp
+            print(f"{market.next_open} - in {secondsToNextOpen} seconds")
 
 
-    #         time.sleep(secondsToNextOpen.total_seconds())
+            time.sleep(secondsToNextOpen.total_seconds())
 
 
     #get the aggs for a company for a specified time frame --
