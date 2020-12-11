@@ -25,6 +25,7 @@ def stockChecker():
 
     #get my primary watchList
     watchListCompanies = api.get_watchlist(watchListId)
+    messageContent = ""
 
     for company in watchListCompanies.assets:
         companySymbol = company['symbol']
@@ -55,21 +56,19 @@ def stockChecker():
             else:
                 upOrDown = "no change"
 
-            MessageTwo = {
-                "content": "-----"
-            }
-
             if(dayChange >= .40):
                 #Sell {}?, price is ${}, {} from last time of ${}. Change from opening ${} (${})
                 #msg = "Potential time to sell {}, price is ${}, which is a change of ${} from it's opening price (${})."
-                msg = "Sell {}?, price is ${}, {} ${} from last time. Opened @ ${} -- ${}."
-                Message = {
-                    #"content" : msg.format(companySymbol, currentPrice, priceChange, companyOpeningPrice)
-                    "content": msg.format(companySymbol, currentPrice, upOrDown, lastQuoteChange, companyOpeningPrice, priceChange)
-                }
+                msg = "Sell {}?, price is ${}, {} ${} from last time. Opened @ ${}, ${} change.\n"
+                # Message = {
+                #     #"content" : msg.format(companySymbol, currentPrice, priceChange, companyOpeningPrice)
+                #     "content": msg.format(companySymbol, currentPrice, upOrDown, lastQuoteChange, companyOpeningPrice, priceChange)
+                # }
                 
-                requests.post(discord_webhook_url, data=Message)
-                requests.post(discord_webhook_url, data=MessageTwo)
+                messageContent += (msg.format(companySymbol, currentPrice, upOrDown, lastQuoteChange, companyOpeningPrice, priceChange))
+
+                # requests.post(discord_webhook_url, data=Message)
+                # requests.post(discord_webhook_url, data=MessageTwo)
                 
                 companiesLastQuote[companySymbol] = currentPrice
 
@@ -77,14 +76,16 @@ def stockChecker():
                 print("----")
             elif(dayChange <= -0.40):
                 #msg = "Potential time to buy ${}, price is ${}, which is a change of ${} from it's opening price (${})."
-                msg = "Buy {}?, price is ${}, {} ${} from last time. Opened @ ${} -- ${}."
-                Message = {
-                    #"content": msg.format(companySymbol, currentPrice, priceChange, companyOpeningPrice)
-                    "content": msg.format(companySymbol, currentPrice, upOrDown, lastQuoteChange, companyOpeningPrice, priceChange)
-                }
+                msg = "Buy {}?, price is ${}, {} ${} from last time. Opened @ ${}, ${} change.\n"
+                # Message = {
+                #     #"content": msg.format(companySymbol, currentPrice, priceChange, companyOpeningPrice)
+                #     "content": msg.format(companySymbol, currentPrice, upOrDown, lastQuoteChange, companyOpeningPrice, priceChange)
+                # }
                 
-                requests.post(discord_webhook_url, data=Message)
-                requests.post(discord_webhook_url, data=MessageTwo)
+                messageContent += msg.format(companySymbol, currentPrice, upOrDown, lastQuoteChange, companyOpeningPrice, priceChange)
+
+                # requests.post(discord_webhook_url, data=Message)
+                # requests.post(discord_webhook_url, data=MessageTwo)
                 
                 companiesLastQuote[companySymbol] = currentPrice
 
@@ -94,6 +95,18 @@ def stockChecker():
                 companiesLastQuote[companySymbol] = currentPrice
         else:
             companiesLastQuote[companySymbol] = currentPrice
+        
+    Message = {
+        "content": messageContent
+    }
+    
+    messageBreak = {
+        "content": "-----"
+    }
+
+
+    requests.post(discord_webhook_url, data=Message)
+    requests.post(discord_webhook_url, data=messageBreak)
     
     
 
@@ -123,7 +136,7 @@ def runAnalysis():
         count += 1
         if market.is_open:
             stockChecker()
-            time.sleep(300)
+            time.sleep(3600)
             #300 seconds = 5 minutes
             #900 seconds = 15 minutes
             #1800 seconds = 30 minutes
