@@ -95,18 +95,16 @@ def stockChecker():
                 companiesLastQuote[companySymbol] = currentPrice
         else:
             companiesLastQuote[companySymbol] = currentPrice
-        
+    
+
+    messageContent += "-------\n"
+
     Message = {
         "content": messageContent
     }
-    
-    messageBreak = {
-        "content": "-----"
-    }
 
-
-    requests.post(discord_webhook_url, data=Message)
-    requests.post(discord_webhook_url, data=messageBreak)
+    if(messageContent != "-------\n"):
+        requests.post(discord_webhook_url, data=Message)
     
     
 
@@ -136,7 +134,12 @@ def runAnalysis():
         count += 1
         if market.is_open:
             stockChecker()
-            time.sleep(3600)
+
+            if count == 1:
+                time.sleep(300)
+            else:
+                time.sleep(3600)
+            
             #300 seconds = 5 minutes
             #900 seconds = 15 minutes
             #1800 seconds = 30 minutes
